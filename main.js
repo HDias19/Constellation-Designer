@@ -2,7 +2,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
-let scene, camera, renderer, controls, decoded, gui, points, line, materialLine;
+let scene, camera, renderer, controls, decoded, gui, points, line
+let materialLine
+let lastInput = "Held:Verb,together:Adverb,by:Preposition,hopes:Noun,and:Conjunction,dreams:Noun"
 const width = window.innerWidth;
 const height = window.innerHeight;
 
@@ -15,7 +17,6 @@ let center = [0,0]
 
 let type = ["adjective", "adverb", "article", "conjunction",
             "interjection", "noun", "preposition", "pronoun", "verb"]
-
 
 // It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife
 // let words = [["It","Pronoun"], ["is","Verb"], ["a", "Article"], ["truth", "Noun"], ["universally", "Adverb"], ["acknowledged", "Verb"], ["that", "Conjunction"], ["a", "Article"], ["single","Adjective"], ["man","Noun"], ["in", "Preposition"], ["possession", "Noun"], ["of", "Preposition"], ["a", "Article"], ["good", "Adjective"], ["fortune", "Noun"], ["must", "Verb"], ["be", "Verb"], ["in", "Preposition"], ["want", "Noun"], ["of", "Preposition"], ["a", "Article"], ["wife", "Noun"]]
@@ -72,14 +73,15 @@ function init() {
         },
         Words: function() {
             let aux = prompt("Please enter the words you want to use and its word type, separated by colons and commas", 
-                                "Held:Verb,together:Adverb,by:Preposition,hopes:Noun,and:Conjunction,dreams:Noun")
-                                .trim().replace(/\s/g, "").toLowerCase().replace(/ /g, "")
+                                lastInput)
+                                .trim().replace(/\s/g, "").replace(/ /g, "")
                                 .split(",")
-            console.log(aux)
+            
+            lastInput = aux
             words = []
             aux.forEach(element => {
                 let aux2 = element.split(":")
-                words.push([aux2[0], aux2[1]])
+                words.push([aux2[0], aux2[1].toLowerCase()])
             });
             console.log(words)
             deleteConstelation();
@@ -141,17 +143,15 @@ function centerScreen() {
 
 function decoder(words) {
     let toret = []
-    try {
-        words.forEach(word => {
-            toret.push([word[0].length, type.indexOf(word[1])])
-        });
-    } catch (error) {
-        alert("Creation failed, please check the words and try again.")
-    }
+    words.forEach(word => {
+        toret.push([word[0].length, type.indexOf(word[1].toLowerCase())])
+    });
     return toret
 }
 
 function createConstelation() {
+    document.getElementById('overlay-text').innerHTML = words.map(element => element[0]).join(" ");
+    
     center = [0,0]
     
     decoded = decoder(words)
