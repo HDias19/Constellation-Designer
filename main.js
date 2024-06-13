@@ -2,11 +2,15 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
+// new word stuff
+let phraseArr = [], typeArr = []
+let wordBuffer, typeBuffer
 let scene, camera, renderer, controls, decoded, gui, points, line
 let materialLine
 let lastInput = "Held:Verb,together:Adverb,by:Preposition,hopes:Noun,and:Conjunction,dreams:Noun"
 const width = window.innerWidth;
 const height = window.innerHeight;
+let phrase = false
 
 let starWidth = 2;
 let lineSize = 30;
@@ -58,9 +62,9 @@ function init() {
 
     // Controls
     controls = new OrbitControls( camera, renderer.domElement );
-
+    
     // GUI
-    gui = new GUI()
+    gui = new GUI({ container: document.getElementById('gui') })
     const base = {
         Reset: function() {
             starWidth = 2;
@@ -70,8 +74,8 @@ function init() {
             deleteConstelation();
             createConstelation(); 
             centerScreen();       
-        },
-        Words: function() {
+		}, 
+		Words: function() {
             let aux = prompt("Please enter the words you want to use and its word type, separated by colons and commas", 
                                 lastInput)
                                 .trim().replace(/\s/g, "").replace(/ /g, "")
@@ -87,6 +91,17 @@ function init() {
             deleteConstelation();
             createConstelation(); 
             centerScreen();       
+        },
+        Phrase: function() {
+            phrase = !phrase
+            if (phrase) {
+                document.getElementById('phraseGetter').style.display = 'block'
+                document.getElementById('newPhrase').style.display = 'block'
+            }
+            else {
+                document.getElementById('phraseGetter').style.display = 'none'
+                document.getElementById('newPhrase').style.display = 'none'
+            }    
         }
     }
     
@@ -111,12 +126,61 @@ function init() {
     }
 
     LineFolder.add(line, 'Line Size', 10, 50).listen()
-    LineFolder.open()
+    LineFolder.close()
     StarFolder.add(star, 'Star Size', .05, 10, 0.05).listen() 
-    StarFolder.open()
-    gui.add(base, 'Words').listen();
+    StarFolder.close()
     gui.add(base, 'Draw').listen();
     gui.add(base, 'Reset').listen();
+
+    // Input GUI
+    const inputGUI = new GUI( { container: document.getElementById('inputGUI'),
+        title: 'Edit Phrase'
+     } )
+    const aboba = {
+        Word: '',
+        Type: '',
+        Add: function() {
+            if (aboba.Word != '' && aboba.Type != '') {
+                if(type.indexOf(aboba.Type.toLowerCase()) != -1) {
+                    phraseArr.push(aboba.Word)
+                    typeArr.push(aboba.Type)
+                    console.log(phraseArr, typeArr)
+                    document.getElementById('newPhrase').innerText = getPhrase()
+                    document.getElementById('newPhrase').style.display = 'block'
+                    if (document.getElementById('newPhrase').innerText != '*New Phrase*') {
+                        aboba.Word = ''
+                        aboba.Type = ''
+                    }
+                    document.getElementById('wordInput').focus();
+                }
+                else {
+                    alert('Please enter a valid type')
+                }
+            } else {
+                alert('Please enter a word and its type')
+            }
+        },
+        RemoveLast: function() {
+            phraseArr.pop()
+            typeArr.pop()
+            document.getElementById('newPhrase').innerText = getPhrase()
+        },
+        SetPhrase: function() {
+            words = []
+            for (let i = 0; i < phraseArr.length; i++) {
+                words.push([phraseArr[i], typeArr[i]])
+            }
+            document.getElementById('newPhrase').style.display = 'none'
+            deleteConstelation();
+            createConstelation(); 
+            centerScreen();       
+        }
+    }
+    inputGUI.add(aboba, 'Word').listen()
+    inputGUI.add(aboba, 'Type').listen()
+    inputGUI.add(aboba, 'Add').listen()
+    inputGUI.add(aboba, 'RemoveLast').listen()
+    inputGUI.add(aboba, 'SetPhrase').listen()
 
     createConstelation();
 
@@ -125,6 +189,14 @@ function init() {
     window.addEventListener( 'resize', onWindowResize );
 
     animate();
+}
+
+function getPhrase() {
+    let toret = ''
+    for (let i = 0; i < phraseArr.length; i++) {
+        toret = toret + phraseArr[i] + ' '
+    }
+    return toret
 }
 
 function centerScreen() {

@@ -17,12 +17,27 @@
     			position: absolute;
 				bottom: 2%;
 				left: 50%;
-				color: #000000; /* Change the color as needed */
+				color: #000000;
 				font-size: 20px;
 				font-weight: bold;
 				text-align: center;
 				transform: translate(-50%, 0);
 				font-family: Arial, sans-serif;
+			}
+			#newPhrase {
+				position: absolute;
+				left: 50%;
+				transform: translate(-50%, 0);
+				display: none;
+			}
+			#inputGUI {
+				position: absolute;
+				display: block;
+			}
+			#GUI {
+				position: absolute;
+				left: 100%;
+				display: block;
 			}
 		</style>
 	</head>
@@ -31,6 +46,9 @@
 
 		<div id="WebGL-output"> </div>
 		<div id="overlay-text"></div>
+		<div id= "newPhrase">*New Phrase*</div>
+		<div id= "GUI"></div>
+		<div id= "inputGUI"></div>
 		
 		<!-- The library -->
 
