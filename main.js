@@ -4,10 +4,8 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 // new word stuff
 let phraseArr = [], typeArr = []
-let wordBuffer, typeBuffer
 let scene, camera, renderer, controls, decoded, gui, points, line
 let materialLine
-let lastInput = "Held:Verb,together:Adverb,by:Preposition,hopes:Noun,and:Conjunction,dreams:Noun"
 const width = window.innerWidth;
 const height = window.innerHeight;
 let phrase = false
@@ -74,35 +72,7 @@ function init() {
             deleteConstelation();
             createConstelation(); 
             centerScreen();       
-		}, 
-		Words: function() {
-            let aux = prompt("Please enter the words you want to use and its word type, separated by colons and commas", 
-                                lastInput)
-                                .trim().replace(/\s/g, "").replace(/ /g, "")
-                                .split(",")
-            
-            lastInput = aux
-            words = []
-            aux.forEach(element => {
-                let aux2 = element.split(":")
-                words.push([aux2[0], aux2[1].toLowerCase()])
-            });
-            console.log(words)
-            deleteConstelation();
-            createConstelation(); 
-            centerScreen();       
-        },
-        Phrase: function() {
-            phrase = !phrase
-            if (phrase) {
-                document.getElementById('phraseGetter').style.display = 'block'
-                document.getElementById('newPhrase').style.display = 'block'
-            }
-            else {
-                document.getElementById('phraseGetter').style.display = 'none'
-                document.getElementById('newPhrase').style.display = 'none'
-            }    
-        }
+		},   
     }
     
     const LineFolder = gui.addFolder('Line'),
@@ -138,7 +108,7 @@ function init() {
      } )
     const aboba = {
         Word: '',
-        Type: '',
+        Type: 'adjective',
         Add: function() {
             if (aboba.Word != '' && aboba.Type != '') {
                 if(type.indexOf(aboba.Type.toLowerCase()) != -1) {
@@ -151,7 +121,6 @@ function init() {
                         aboba.Word = ''
                         aboba.Type = ''
                     }
-                    document.getElementById('wordInput').focus();
                 }
                 else {
                     alert('Please enter a valid type')
@@ -171,13 +140,18 @@ function init() {
                 words.push([phraseArr[i], typeArr[i]])
             }
             document.getElementById('newPhrase').style.display = 'none'
+            document.getElementById('newPhrase').innerText = '*New Phrase*'
+            aboba.Word = ''
+            aboba.Type = 'adjective'
+            phraseArr = []
+            typeArr = []
             deleteConstelation();
             createConstelation(); 
             centerScreen();       
         }
     }
     inputGUI.add(aboba, 'Word').listen()
-    inputGUI.add(aboba, 'Type').listen()
+    inputGUI.add(aboba, 'Type', type).listen()
     inputGUI.add(aboba, 'Add').listen()
     inputGUI.add(aboba, 'RemoveLast').listen()
     inputGUI.add(aboba, 'SetPhrase').listen()
